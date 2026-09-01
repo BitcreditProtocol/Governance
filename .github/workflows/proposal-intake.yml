@@ -6,12 +6,16 @@
 #    all — but it still can through the API, `gh issue create`, or an
 #    integration, and a contributor with read access cannot apply one by hand.
 #
-# 2. Somebody told. An issue cannot be assigned to a team -- `Issue.assignees` is
-#    a `UserConnection`, so assignees are people and there is no team option at
-#    any level. A team mention is the working equivalent: it notifies every
-#    member of @BitcreditProtocol/developers, which is the team the organisation
-#    puts everyone in, without singling anyone out or putting a name in a field
-#    that then looks like ownership.
+# 2. Somebody told. The team is mentioned rather than assigned, because an issue
+#    cannot be assigned to a team at all: `repos/{owner}/{repo}/assignees` returns
+#    only `type=User`, every team slug 404s against `assignees/{name}`, and
+#    `Issue.assignees` is a `UserConnection` in the schema. A mention is the
+#    working equivalent -- it reaches every member of the team without putting one
+#    person's name in a field that then reads as ownership.
+#
+#    @BitcreditProtocol/core-contributors is the team for this. Its privacy is
+#    `closed`, which is what makes it mentionable; a `secret` team such as
+#    `owners` is not, so that one could not be used here even if it were wanted.
 #
 # 3. A copy of what was submitted. The author of an issue can always edit its
 #    title and body; that is GitHub's model and there is no setting anywhere that
@@ -65,7 +69,7 @@ jobs:
         run: |
           jq -n --arg t "$TITLE" --arg b "$BODY" '{
             body: (
-              "@BitcreditProtocol/developers -- a new proposal is awaiting triage.\n\n---\n\n**Submitted as.** The author of an issue can always edit its title and body, so this copy is posted by the intake workflow the moment the issue is opened. Editing somebody else'"'"'s comment needs write access, so this one stays as it was submitted and any later change to the issue is visible against it.\n\n---\n\n### "
+              "@BitcreditProtocol/core-contributors -- a new proposal is awaiting triage.\n\n---\n\n**Submitted as.** The author of an issue can always edit its title and body, so this copy is posted by the intake workflow the moment the issue is opened. Editing somebody else'"'"'s comment needs write access, so this one stays as it was submitted and any later change to the issue is visible against it.\n\n---\n\n### "
               + $t + "\n\n" + $b
             )
           }' | gh api -X POST "repos/$REPO/issues/$NUMBER/comments" --input - --jq '.html_url'
