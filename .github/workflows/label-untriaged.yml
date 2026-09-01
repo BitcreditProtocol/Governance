@@ -1,0 +1,36 @@
+# The proposal form applies `awaiting triage` by itself, so this exists only for
+# an issue opened without it. Blank issues are deliberately enabled here, and a
+# contributor with read access cannot apply a label by hand — without this, such
+# an issue arrives with no label at all and nothing marks it as waiting for
+# anyone. The label is defined in BitcreditProtocol/.github's labels.yml.
+#
+# Nothing from the issue is interpolated into a shell command. This workflow runs
+# with `issues: write` on an event any GitHub user can raise, so the only value it
+# passes is the issue number, and it passes it through the environment rather than
+# into the command line.
+name: Label untriaged issues
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  label:
+    name: Add awaiting triage to an issue that arrived with none
+    if: join(github.event.issue.labels.*.name, '') == ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Add the label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+        run: |
+          jq -n '{labels: ["awaiting triage"]}' \
+            | gh api -X POST "repos/$REPO/issues/$NUMBER/labels" --input - \
+                --jq '.[].name'
