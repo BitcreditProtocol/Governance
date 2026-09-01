@@ -1,0 +1,21 @@
+# Repeated here rather than inherited. A repository that carries its own
+# .github/ISSUE_TEMPLATE stops using the organisation defaults in
+# BitcreditProtocol/.github, contact links included — so adding the proposal form
+# without this file would silently remove the security, documentation and
+# specification links from this repository's issue chooser.
+#
+# Blank issues stay available on purpose, matching the organisation default: a
+# template that gets in the way just means the report never gets filed. An issue
+# opened blank arrives with no label, so .github/workflows/label-untriaged.yml
+# adds `awaiting triage` to it.
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/BitcreditProtocol/.github/security/advisories/new
+    about: Report privately. Never open a public issue for a vulnerability.
+  - name: Documentation
+    url: https://docs.bitcr.org/
+    about: Guides and reference for the Bitcredit Protocol.
+  - name: Protocol specifications
+    url: https://github.com/BitcreditProtocol/cats
+    about: How the protocol is defined.
