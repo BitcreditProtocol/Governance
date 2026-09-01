@@ -1,8 +1,9 @@
-# The proposal form applies `awaiting triage` by itself, so this exists only for
-# an issue opened without it. Blank issues are deliberately enabled here, and a
-# contributor with read access cannot apply a label by hand — without this, such
-# an issue arrives with no label at all and nothing marks it as waiting for
-# anyone. The label is defined in BitcreditProtocol/.github's labels.yml.
+# The proposal form applies `awaiting triage` by itself, and blank issues are
+# disabled, so an unlabelled issue should not normally arrive at all. This exists
+# for the routes that bypass the chooser — the API, `gh issue create`, an
+# integration — where an issue can still land with no label and nothing marking it
+# as waiting for anyone. A contributor with read access cannot apply one by hand.
+# The label is defined in BitcreditProtocol/.github's labels.yml.
 #
 # Nothing from the issue is interpolated into a shell command. This workflow runs
 # with `issues: write` on an event any GitHub user can raise, so the only value it
