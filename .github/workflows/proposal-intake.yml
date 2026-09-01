@@ -6,7 +6,14 @@
 #    all — but it still can through the API, `gh issue create`, or an
 #    integration, and a contributor with read access cannot apply one by hand.
 #
-# 2. A copy of what was submitted. The author of an issue can always edit its
+# 2. Somebody told. An issue cannot be assigned to a team -- `Issue.assignees` is
+#    a `UserConnection`, so assignees are people and there is no team option at
+#    any level. A team mention is the working equivalent: it notifies every
+#    member of @BitcreditProtocol/developers, which is the team the organisation
+#    puts everyone in, without singling anyone out or putting a name in a field
+#    that then looks like ownership.
+#
+# 3. A copy of what was submitted. The author of an issue can always edit its
 #    title and body; that is GitHub's model and there is no setting anywhere that
 #    turns it off. GitHub does record the edit and keep the history, but for a
 #    governance process it is worth having the submitted text as a comment the
@@ -47,7 +54,7 @@ jobs:
             | gh api -X POST "repos/$REPO/issues/$NUMBER/labels" --input - \
                 --jq '.[].name'
 
-      - name: Record what was submitted, so a later edit is visible against it
+      - name: Tell the team, and record what was submitted
         if: github.event.issue.body != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -58,7 +65,7 @@ jobs:
         run: |
           jq -n --arg t "$TITLE" --arg b "$BODY" '{
             body: (
-              "**Submitted as.** The author of an issue can always edit its title and body, so this copy is posted by the intake workflow the moment the issue is opened. Editing somebody else'"'"'s comment needs write access, so this one stays as it was submitted and any later change to the issue is visible against it.\n\n---\n\n### "
+              "@BitcreditProtocol/developers -- a new proposal is awaiting triage.\n\n---\n\n**Submitted as.** The author of an issue can always edit its title and body, so this copy is posted by the intake workflow the moment the issue is opened. Editing somebody else'"'"'s comment needs write access, so this one stays as it was submitted and any later change to the issue is visible against it.\n\n---\n\n### "
               + $t + "\n\n" + $b
             )
           }' | gh api -X POST "repos/$REPO/issues/$NUMBER/comments" --input - --jq '.html_url'
