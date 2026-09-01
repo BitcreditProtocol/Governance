@@ -1,0 +1,64 @@
+# Two things every new issue in this repository needs, neither of which the
+# person opening it is able to do.
+#
+# 1. A label. The proposal form applies `awaiting triage` by itself and blank
+#    issues are disabled, so an unlabelled issue should not normally arrive at
+#    all — but it still can through the API, `gh issue create`, or an
+#    integration, and a contributor with read access cannot apply one by hand.
+#
+# 2. A copy of what was submitted. The author of an issue can always edit its
+#    title and body; that is GitHub's model and there is no setting anywhere that
+#    turns it off. GitHub does record the edit and keep the history, but for a
+#    governance process it is worth having the submitted text as a comment the
+#    author cannot touch — editing somebody else's comment needs write access, so
+#    this one is fixed the moment it is posted.
+#
+# The label is defined in BitcreditProtocol/.github's labels.yml.
+#
+# On safety: this runs with `issues: write` on an event any GitHub user can
+# raise, and the title and body are attacker-controlled text. Neither is ever
+# interpolated into a shell command — both reach the script through the
+# environment and go into the request through `jq --arg`, which quotes whatever
+# they contain.
+name: Proposal intake
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  intake:
+    name: Label the issue and record what was submitted
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Add awaiting triage, when the issue arrived with no label
+        if: join(github.event.issue.labels.*.name, '') == ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+        run: |
+          jq -n '{labels: ["awaiting triage"]}' \
+            | gh api -X POST "repos/$REPO/issues/$NUMBER/labels" --input - \
+                --jq '.[].name'
+
+      - name: Record what was submitted, so a later edit is visible against it
+        if: github.event.issue.body != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          TITLE: ${{ github.event.issue.title }}
+          BODY: ${{ github.event.issue.body }}
+        run: |
+          jq -n --arg t "$TITLE" --arg b "$BODY" '{
+            body: (
+              "**Submitted as.** The author of an issue can always edit its title and body, so this copy is posted by the intake workflow the moment the issue is opened. Editing somebody else'"'"'s comment needs write access, so this one stays as it was submitted and any later change to the issue is visible against it.\n\n---\n\n### "
+              + $t + "\n\n" + $b
+            )
+          }' | gh api -X POST "repos/$REPO/issues/$NUMBER/comments" --input - --jq '.html_url'

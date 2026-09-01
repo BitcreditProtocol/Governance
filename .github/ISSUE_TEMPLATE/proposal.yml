@@ -1,58 +1,51 @@
 name: Proposal
-description: Propose a change to the protocol, or to how the project is run.
+description: Propose a change to the protocol, or to how the project is run. Open to anyone.
 labels: ["awaiting triage"]
 body:
+  # GitHub renders a single newline inside an issue body as a line break, so each
+  # paragraph here is one source line. Wrapping these at 80 columns is what made
+  # the rendered form ragged.
   - type: markdown
     attributes:
       value: |
-        **Anyone can open a proposal.** You do not need to be a member of the
-        organisation, and you do not need to set a label or a status — submitting
-        this form marks the issue `awaiting triage` by itself, because a
-        contributor with read access cannot apply a label by hand.
+        **Anyone can open a proposal.** You do not need to be a member of the organisation, and you do not need to set a label, a status or a column — submitting this form marks the issue `awaiting triage` on its own.
 
-        A Bitcredit member takes it from there. Proposals move
-        **New proposals → Proposal debate → Supported proposal** or
-        **Rejected proposal** on the
-        [Proposal Triage board](https://github.com/orgs/BitcreditProtocol/projects/19),
-        and only members can move a card, relabel it or close it.
+        A Bitcredit member takes it from there:
 
-        **Not a proposal?** A security vulnerability goes to a
-        [private advisory](https://github.com/BitcreditProtocol/.github/security/advisories/new),
-        never a public issue. A bug in a specific component belongs in that
-        component's repository.
+        **New proposals** → **Proposal debate** → **Supported proposal** or **Rejected proposal**
+
+        Only members move a card between those columns on the [Proposal Triage board](https://github.com/orgs/BitcreditProtocol/projects/19).
+
+        ---
+
+        **Not a proposal?** A security vulnerability goes to a [private advisory](https://github.com/BitcreditProtocol/.github/security/advisories/new), never a public issue. A bug in a specific component belongs in that component's own repository.
   - type: textarea
     id: summary
     attributes:
       label: Summary
       description: What you are proposing, in a sentence or two.
+      placeholder: One or two sentences. The detail goes below.
     validations:
       required: true
   - type: textarea
     id: problem
     attributes:
       label: Problem
-      description: >-
-        What is wrong or missing today, and who it affects. A proposal that
-        starts from a problem is easier to debate than one that starts from a
-        solution.
+      description: What is wrong or missing today, and who it affects. A proposal that starts from a problem is easier to debate than one that starts from a solution.
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
       label: Proposed change
-      description: >-
-        What should change. Be concrete about scope — what is in, and what you
-        are deliberately leaving out.
+      description: What should change. Be concrete about scope — what is in, and what you are deliberately leaving out.
     validations:
       required: true
   - type: textarea
     id: alternatives
     attributes:
       label: Alternatives considered
-      description: >-
-        What else you weighed, and why you did not pick it. Optional, and
-        usually the part that shortens the debate.
+      description: What else you weighed, and why you did not pick it. Optional, and usually the part that shortens the debate.
     validations:
       required: false
   - type: textarea
